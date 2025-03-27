@@ -42,10 +42,11 @@ def extract_sift_features(images):
 
 # Feature extraction using SIFT
 X_raw_full = df_train.iloc[:, 1:].values.reshape(-1, 28, 28).astype(np.uint8)
-X_raw_subset = X_raw_full[:5000]  
+X_raw_subset = X_raw_full[:60000]  
 X_sift_subset = extract_sift_features(X_raw_subset)
 y_full = df_train.iloc[:, 0].values
-y_subset = y_full[:5000]
+y_subset = y_full[:60000]
+print("60000")
 
 
 # Use important features to train ie (60000,128) instead of (60000,784)
@@ -53,9 +54,34 @@ X_train_sift, X_val_sift, y_train_sift, y_val_sift = train_test_split(X_sift_sub
 print("splitting done")
 
 
-svm_model = SVC(kernel='linear')  # rbf or poly?
+svm_model = SVC(kernel='rbf')  # rbf/poly better for image, linear is for text
 svm_model.fit(X_train_sift, y_train_sift)
 
 y_pred = svm_model.predict(X_val_sift)
 print("Accuracy:", accuracy_score(y_val_sift, y_pred))
 print(classification_report(y_val_sift, y_pred))
+
+##########################################
+
+# Extract features and labels from train and test sets
+# X_train_raw = df_train.iloc[:, 1:].values  # shape: (60000, 784)
+# y_train = df_train.iloc[:, 0].values
+
+# X_test_raw = df_test.iloc[:, 1:].values    # shape: (10000, 784)
+# y_test = df_test.iloc[:, 0].values
+
+# # Normalize pixel values (0 to 1)
+# X_train = X_train_raw / 255.0
+# X_test = X_test_raw / 255.0
+
+# # Train SVM with RBF kernel
+# svm_model = SVC(kernel='rbf')  # try 'poly' or 'linear' too if you want
+# svm_model.fit(X_train, y_train)
+
+# # Predict and evaluate
+# y_pred = svm_model.predict(X_test)
+
+# # Output metrics
+# print("Test Accuracy:", accuracy_score(y_test, y_pred))
+# print("Test Error:", 1 - accuracy_score(y_test, y_pred))
+# print("Classification Report:\n", classification_report(y_test, y_pred))
