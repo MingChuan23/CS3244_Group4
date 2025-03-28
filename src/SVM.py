@@ -46,20 +46,35 @@ X_raw_subset = X_raw_full[:60000]
 X_sift_subset = extract_sift_features(X_raw_subset)
 y_full = df_train.iloc[:, 0].values
 y_subset = y_full[:60000]
-print("60000")
+print("60000 used")
 
 
 # Use important features to train ie (60000,128) instead of (60000,784)
 X_train_sift, X_val_sift, y_train_sift, y_val_sift = train_test_split(X_sift_subset, y_subset, test_size=0.2, random_state=42)
-print("splitting done")
-
+print("splitting done for validation set")
 
 svm_model = SVC(kernel='rbf')  # rbf/poly better for image, linear is for text
 svm_model.fit(X_train_sift, y_train_sift)
 
 y_pred = svm_model.predict(X_val_sift)
+print("Validation - training set split 48000 vs 12000")
 print("Accuracy:", accuracy_score(y_val_sift, y_pred))
 print(classification_report(y_val_sift, y_pred))
+
+# we now test on unseen data df_test
+
+X_test_raw = df_test.iloc[:, 1:].values.reshape(-1, 28, 28).astype(np.uint8)
+y_test = df_test.iloc[:, 0].values
+
+X_test_sift = extract_sift_features(X_test_raw)
+print("\nSifting done on unseen data")
+
+y_test_pred = svm_model.predict(X_test_sift)
+
+print("\n=== Final Evaluation on df_test (Unseen Data) ===")
+print("Test Accuracy:", accuracy_score(y_test, y_test_pred))
+print("Test Error:", 1 - accuracy_score(y_test, y_test_pred))
+print("Classification Report:\n", classification_report(y_test, y_test_pred))
 
 ##########################################
 
@@ -75,7 +90,7 @@ print(classification_report(y_val_sift, y_pred))
 # X_test = X_test_raw / 255.0
 
 # # Train SVM with RBF kernel
-# svm_model = SVC(kernel='rbf')  # try 'poly' or 'linear' too if you want
+# svm_model = SVC(kernel='rbf')  
 # svm_model.fit(X_train, y_train)
 
 # # Predict and evaluate
