@@ -76,7 +76,7 @@ print("Test Accuracy:", accuracy_score(y_test, y_test_pred))
 print("Test Error:", 1 - accuracy_score(y_test, y_test_pred))
 print("Classification Report:\n", classification_report(y_test, y_test_pred))
 
-##########################################
+########################################## use full 784 pixels
 
 # Extract features and labels from train and test sets
 # X_train_raw = df_train.iloc[:, 1:].values  # shape: (60000, 784)
