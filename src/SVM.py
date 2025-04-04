@@ -19,6 +19,9 @@ from sklearn.preprocessing import label_binarize
 from memory_profiler import memory_usage
 print("import done")
 
+import torch
+from torch.utils.data import TensorDataset
+
 # Load dataset
 df_train = pd.read_csv("../data/fashion-mnist_train.csv")
 df_test = pd.read_csv("../data/fashion-mnist_test.csv")
@@ -91,17 +94,16 @@ fashion_mnist_labels = {
 
 ########################################## use full 784 pixels
 
-# Extract features and labels
-X_train_raw = df_train.iloc[:, 1:].values # 60000 x 784
-y_train = df_train.iloc[:, 0].values # 60000 x 1
+# Load saved PCA tensors
+X_train_tensor, y_train_tensor = torch.load("train_tensors.pt")
+X_test_tensor, y_test_tensor = torch.load("test_tensors.pt")
 
-X_test_raw = df_test.iloc[:, 1:].values
-y_test = df_test.iloc[:, 0].values
+# Convert to NumPy for scikit-learn
+X_train = X_train_tensor.numpy()
+y_train = y_train_tensor.numpy()
 
-# Normalize
-X_train = X_train_raw / 255.0
-X_test = X_test_raw / 255.0
-print("normalisation done")
+X_test = X_test_tensor.numpy()
+y_test = y_test_tensor.numpy()
 
 # Train SVM (with probability enabled)
 svm_model = SVC(kernel='rbf', probability = True)
